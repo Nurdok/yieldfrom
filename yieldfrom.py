@@ -180,7 +180,7 @@ handling of empty generators, etc.
 
 """
 
-__version__ = '1.0.0rc0'
+__version__ = '1.0.0rc'
 __all__ = ('yieldfrom', 'From', 'gen_return')
 
 
