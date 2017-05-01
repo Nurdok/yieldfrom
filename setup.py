@@ -1,7 +1,7 @@
 from setuptools import setup
 
 # Don't forget to update __version__ in the module itself.
-version = '1.0.0rc'
+version = '1.0.0'
 
 setup(
     name='yieldfrom',
