@@ -3,5 +3,5 @@ language: python
 python:
   - "2.7"
 install: pip install -rrequirements.txt
-script: py.test
+script: py.test tests.py
 language: python
