@@ -1,0 +1,10 @@
+sudo: false
+language: python
+python:
+  - "2.7"
+install: pip install pytest pydocstyle pycodestyle
+script:
+  - pytest
+  - pydocstyle
+  - pycodestyle
+  language: python
