@@ -3,8 +3,5 @@ language: python
 python:
   - "2.7"
 install: pip install -rrequirements.txt
-script:
-  pytest
-  pydocstyle
-  pycodestyle
+script: py.test
 language: python
