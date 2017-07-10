@@ -3,7 +3,7 @@ import os
 from setuptools import setup
 
 # Don't forget to update __version__ in the module itself.
-version = '1.0.0'
+version = '1.0.1rc'
 
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     long_description = readme.read()
