@@ -211,6 +211,15 @@ def get_stop_iteration_value(e_stop):
     return e_stop.args[0] if e_stop.args else None
 
 
+def gen_nice_close(gen):
+    """Close generator, ignore if has no ``close`` attribute."""
+    try:
+        _close = gen.close
+    except AttributeError:
+        pass
+    else:
+        _close()
+
 
 def yieldfrom(generator_func):
     """Decorate a function to enable ``yield From(generator)``.
@@ -268,12 +277,7 @@ def yieldfrom(generator_func):
                             except GeneratorExit:
                                 # Higher level caller called `close()`.
                                 # Close the subgenerator if possible.
-                                try:
-                                    _close = subgen.close
-                                except AttributeError:
-                                    pass
-                                else:
-                                    _close()
+                                gen_nice_close(subgen)
                                 raise
                             except BaseException:
                                 # Higher level caller called `throw()`.
@@ -343,6 +347,7 @@ def yieldfrom(generator_func):
         finally:
             # `gen` raised an exception or caller called `close()` or generator
             # was garbage collected.
-            gen.close()
+            # Close the generator if possible.
+            gen_nice_close(gen)
 
     return wrapper

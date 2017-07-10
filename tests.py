@@ -161,3 +161,20 @@ def test_exception_flow():
         yield 3
 
     assert list(gen()) == [1, 2, 3]
+
+
+def test_non_generator_wrapping():
+    """Test wrapping a non-generator function with ``yieldfrom``."""
+
+    @yieldfrom
+    def non_gen():
+        return 42
+
+    @yieldfrom
+    def gen():
+        yield From(non_gen())
+
+    with pytest.raises(AttributeError) as excinfo:
+        list(gen())
+
+    assert 'next' in str(excinfo.value)
