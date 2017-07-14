@@ -173,6 +173,6 @@ def main():
 ```
     
 This module is an adaptation of the following Python recipe:
-http://code.activestate.com/recipes/576727
+http://code.activestate.com/recipes/576727  
 Modifications include bug fixes in exception handling, naming, documentation,
 handling of empty generators, etc.
