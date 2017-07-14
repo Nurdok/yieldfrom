@@ -1,37 +1,178 @@
-## Welcome to GitHub Pages
+A backport of the `yield from` semantic from Python 3.x to Python 2.7
 
-You can use the [editor on GitHub](https://github.com/Nurdok/yieldfrom/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+If you want to nest generators in Python 3.x, you can use the ``yield from``
+keywords. This allows you to automatically iterate over sub-generators and
+transparently pass exceptions and return values from the top level caller
+to the lowest generator.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+```.py
+def subgen():
+    yield 2
+    yield 3
 
-### Markdown
+def gen():
+    yield 1
+    yield from subgen()  # Python 3.x only
+    yield 4
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+def main():
+    for i in gen():
+        print i,
 
-```markdown
-Syntax highlighted code block
+>>> main()
+... 1 2 3 4
+```
+    
+This functionality is not available in Python 2.x, and we emulate it using the
+`yieldfrom` decorator and the helper `From` class:
 
-# Header 1
-## Header 2
-### Header 3
+```.py
+from yieldfrom import yieldfrom, From
+def subgen():
+    yield 2
+    yield 3
 
-- Bulleted
-- List
+@yieldfrom
+def gen():
+    yield 1
+    yield From(subgen())
+    yield 4
 
-1. Numbered
-2. List
+def main():
+    for i in gen():
+        print i,
 
-**Bold** and _Italic_ and `Code` text
+>>> main()
+... 1 2 3 4
+```
+    
+Advanced usage allows returning a value from the subgenerator using 
+`StopIteration`. Using `Return` does this conveniently:
 
-[Link](url) and ![Image](src)
+```.py
+from yieldfrom import yieldfrom, From, Return
+
+def subgen():
+    yield 2
+    yield 3
+    Return(100)  # Raises `StopIteration(100)`
+
+@yieldfrom
+def gen():
+    yield 1
+    ret = (yield From(subgen()))
+    yield 4
+    yield ret
+
+def main():
+    for i in gen():
+        print i,
+
+>>> main()
+... 1 2 3 4 100
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Subgenerators can be nested on multiple levels, each one requiring additional
+decoration by `yieldfrom`:
 
-### Jekyll Themes
+```.py
+def subsubgen():
+    yield 2
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Nurdok/yieldfrom/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+@yieldfrom
+def subgen():
+    yield From(subsubgen())
+    yield 3
 
-### Support or Contact
+@yieldfrom
+def gen():
+    yield 1
+    yield From(subgen())
+    yield 4
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+def main():
+    for i in gen():
+        print i,
+
+>>> main()
+... 1 2 3 4
+```
+    
+Exceptions thrown into the top-level generator can be handled in relevant
+subgenerators:
+
+```.py
+def subsubgen():
+    try:
+        yield 2
+    except ValueError:
+        yield 200
+
+@yieldfrom
+def subgen():
+    yield From(subsubgen())
+    yield 3
+
+@yieldfrom
+def gen():
+    yield 1
+    yield From(subgen())
+    yield 4
+
+def main():
+    try:
+        g = gen()
+        while True:
+            i = g.next()
+            if i == 2:
+                i = g.throw(ValueError())
+        print i,
+    except StopIteration:
+        pass
+
+>>> main()
+... 1 200 3 4
+```
+    
+Note that if you use `yield From()` on a simple iterable (`list`, 
+`tuple`, etc) then the individual members of the iterator will be yielded on
+each iteration (perhaps in that case you need the usual `yield`).
+
+```.py
+@yieldfrom
+def gen():
+    yield From([1, 2, 3])
+    yield [1, 2, 3]
+
+def main():
+    for i in gen():
+        print i
+
+>>> main()
+... 1
+... 2
+... 3
+... [1, 2, 3]
+```
+        
+Passing non-iterable objects to `From` will result in an empty
+generator that does nothing.
+    
+```.py
+@yieldfrom
+def gen():
+    yield From(None)
+    yield 1
+
+def main():
+    for i in gen():
+        print i
+
+>>> main()
+... 1
+```
+    
+This module is an adaptation of the following Python recipe:
+http://code.activestate.com/recipes/576727
+Modifications include bug fixes in exception handling, naming, documentation,
+handling of empty generators, etc.
