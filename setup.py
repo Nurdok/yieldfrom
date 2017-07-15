@@ -2,7 +2,6 @@ import os
 
 from setuptools import setup
 
-# Don't forget to update __version__ in the module itself.
 version = '1.0.3rc'
 
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
@@ -14,6 +13,7 @@ setup(
     description="A backport of the `yield from` semantic from Python 3.x to "
                 "Python 2.7",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     license='MIT',
     author='Amir Rachum',
     author_email='amir@rachum.com',
@@ -25,6 +25,6 @@ setup(
         'Operating System :: OS Independent',
         'License :: OSI Approved :: MIT License',
     ],
-    keywords='yield, from, yield from, generators, backport',
+    keywords='yield,from,yield from,generators,backport,iterators',
     py_modules=('yieldfrom',),
 )
