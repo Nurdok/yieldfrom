@@ -267,6 +267,8 @@ def yieldfrom(generator_func):
                         # value passed by `StopIteration`, push it into `gen`
                         # and get the next item.
                         item = gen.send(get_stop_iteration_value(e_stop))
+                    except BaseException:
+                        item = gen.throw(*sys.exc_info())
                     else:
                         # INNER loop: iterate on values yielded by
                         # subgenerator.

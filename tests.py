@@ -163,6 +163,26 @@ def test_exception_flow():
     assert list(gen()) == [1, 2, 3]
 
 
+def test_exception_before_first_yield():
+    """Test an exception raised before the first `yield`."""
+
+    def raise_value_error():
+        raise ValueError()
+
+    @yieldfrom
+    def subgen():
+        yield raise_value_error()
+
+    @yieldfrom
+    def gen():
+        try:
+            yield From(subgen())
+        except ValueError:
+            yield 1
+
+    assert list(gen()) == [1]
+
+
 def test_non_generator_wrapping():
     """Test wrapping a non-generator function with ``yieldfrom``."""
 
