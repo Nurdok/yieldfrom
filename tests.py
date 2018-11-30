@@ -169,7 +169,6 @@ def test_exception_before_first_yield():
     def raise_value_error():
         raise ValueError()
 
-    @yieldfrom
     def subgen():
         yield raise_value_error()
 
