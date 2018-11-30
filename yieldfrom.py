@@ -267,6 +267,13 @@ def yieldfrom(generator_func):
                         # value passed by `StopIteration`, push it into `gen`
                         # and get the next item.
                         item = gen.send(get_stop_iteration_value(e_stop))
+                    except BaseException:
+                        # `subgen` raised an exception before its first
+                        # `yield`. We give `gen` a chance to handle the raised
+                        # exception.
+                        item = gen.throw(*sys.exc_info())
+                        # `subgen` raised an exception and `gen` caught it.
+                        # Execution will continue on the OUTER loop.
                     else:
                         # INNER loop: iterate on values yielded by
                         # subgenerator.
