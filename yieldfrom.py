@@ -125,7 +125,7 @@ subgenerators:
         try:
             g = gen()
             while True:
-                i = g.next()
+                i = next(g)
                 if i == 2:
                     i = g.throw(ValueError())
             print i,
@@ -235,7 +235,7 @@ def yieldfrom(generator_func):
 
         try:
             # First poll of `gen`.
-            item = gen.next()
+            item = next(gen)
 
             # OUTER loop: iterate over all the values yielded by `gen`.
             while True:
@@ -261,7 +261,7 @@ def yieldfrom(generator_func):
                     subgen = item.iterator
                     try:
                         # First poll of `subgen`.
-                        subitem = subgen.next()
+                        subitem = next(subgen)
                     except StopIteration as e_stop:
                         # `subgen` exhausted on first poll. Extract return
                         # value passed by `StopIteration`, push it into `gen`
@@ -331,7 +331,7 @@ def yieldfrom(generator_func):
                                     if sent:
                                         subitem = subgen.send(sent)
                                     else:
-                                        subitem = subgen.next()
+                                        subitem = next(subgen)
                                 except StopIteration as e_stop:
                                     # `subgen` is exhausted. Retrieve its
                                     # return value, push it into `gen` and
