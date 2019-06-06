@@ -193,7 +193,7 @@ def test_non_generator_wrapping():
     def gen():
         yield From(non_gen())
 
-    with pytest.raises(AttributeError) as excinfo:
+    with pytest.raises(TypeError) as excinfo:
         list(gen())
 
-    assert 'next' in str(excinfo.value)
+    assert 'int' in str(excinfo.value)
