@@ -82,7 +82,7 @@ def test_throwing():
     try:
         gen_obj = gen()
         while True:
-            i = gen_obj.next()
+            i = next(gen_obj)
             if i == 2:
                 i = gen_obj.throw(ValueError())
             ret.append(i)
@@ -134,7 +134,7 @@ def test_throwing_handling():
     try:
         gen_obj = gen()
         while True:
-            i = gen_obj.next()
+            i = next(gen_obj)
             if i == 1:
                 i = gen_obj.throw(ValueError())
             ret.append(i)
