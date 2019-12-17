@@ -1,4 +1,6 @@
-A backport of the `yield from` semantic from Python 3.x to Python 2.7
+`yieldfrom` is a backport of the `yield from` semantic from Python 3.x to 
+Python 2.7. It also supports Python 3.x so it can be used as compatibility
+library for code that supports both major versions of Python.
 
 If you want to nest generators in Python 3.x, you can use the ``yield from``
 keywords. This allows you to automatically iterate over sub-generators and
