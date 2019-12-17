@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup
 
-version = '1.0.5rc'
+version = '1.0.5'
 
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     long_description = readme.read()
